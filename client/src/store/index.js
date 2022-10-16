@@ -116,7 +116,7 @@ export const useGlobalStore = () => {
         async function asyncChangeListName(id) {
             let response = await api.getPlaylistById(id);
             if (response.data.success) {
-                let playlist = response.data.playist;
+                let playlist = response.data.playlist;
                 playlist.name = newName;
                 async function updateList(playlist) {
                     response = await api.updatePlaylistById(playlist._id, playlist);
@@ -142,6 +142,26 @@ export const useGlobalStore = () => {
         }
         asyncChangeListName(id);
     }
+
+    // THIS FUNCTION CREATES A NEW LIST 
+    store.createNewList = function (payload) { 
+
+        async function asyncCreateNewList() {
+            let response = await api.createPlaylist(payload);
+            let playlist = response.data.playlist;
+            
+            storeReducer({
+                type: GlobalStoreActionType.CREATE_NEW_LIST,
+                payload: playlist
+            });
+
+            store.history.push("/playlist/" + playlist._id);
+        }
+        asyncCreateNewList();
+        
+    }
+
+      
 
     // THIS FUNCTION PROCESSES CLOSING THE CURRENTLY LOADED LIST
     store.closeCurrentList = function () {
@@ -197,7 +217,7 @@ export const useGlobalStore = () => {
     }
 
     // THIS FUNCTION ENABLES THE PROCESS OF EDITING A LIST NAME
-    store.setlistNameActive = function () {
+    store.setListNameActive = function () {
         storeReducer({
             type: GlobalStoreActionType.SET_LIST_NAME_EDIT_ACTIVE,
             payload: null

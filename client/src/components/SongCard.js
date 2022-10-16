@@ -6,13 +6,14 @@ function SongCard(props) {
 
     const { song, index } = props;
     let cardClass = "list-card unselected-list-card";
+    let space = " "
     return (
         <div
             key={index}
             id={'song-' + index + '-card'}
             className={cardClass}
         >
-            {index + 1}.
+            {index + 1}.{space}
             <a
                 id={'song-' + index + '-link'}
                 className="song-link"
