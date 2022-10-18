@@ -15,7 +15,7 @@ function EditToolbar() {
 
 
     function handleAddSong(event) {
-        
+        store.addSong();   
     }
 
 

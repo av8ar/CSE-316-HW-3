@@ -102,7 +102,7 @@ export const useGlobalStore = () => {
                 });
             }
 
-            // UPDATE A LIST
+            // UPDATE A LIST: list of playlists -> individual playlist
             case GlobalStoreActionType.SET_CURRENT_LIST: {
                 return setStore({
                     idNamePairs: store.idNamePairs,
@@ -122,17 +122,6 @@ export const useGlobalStore = () => {
                     listMarkedForDeletion: null
                 });
             }
-            // // UPDATE A LIST
-            // case GlobalStoreActionType.UPDATE_CURRENT_LIST: {
-            //     return setStore({
-            //         idNamePairs: store.idNamePairs,
-            //         currentList: payload,
-            //         newListCounter: store.newListCounter,
-            //         listNameActive: true,
-            //         listMarkedForDeletion: null
-
-            //     });
-            // }
             default:
                 return store;
         }
@@ -278,7 +267,16 @@ export const useGlobalStore = () => {
     }
 
     store.updatePlaylist = function() {
-
+        async function asyncUpdateList() {
+            const response = await api.updatePlaylistById(store.currentList._id, store.currentList);
+            if(response.data.success) {
+                storeReducer({
+                    type: GlobalStoreActionType.SET_CURRENT_LIST,
+                    payload: store.currentList
+                });
+            }
+        }
+        asyncUpdateList();
     }
 
     store.addSong = function() {
@@ -289,7 +287,8 @@ export const useGlobalStore = () => {
             youtTubeId: "dQw4w9WgXcQ"
         }
         list.songs.push(song);
-
+        store.updatePlaylist();
+        
     }
 
     store.undo = function () {
