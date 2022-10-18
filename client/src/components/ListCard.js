@@ -33,9 +33,7 @@ function ListCard(props) {
 
     function handleToggleDelete(event) {
         event.stopPropagation();
-        //let _id = event.target.id;
-        //_id = ("" + _id).substring("delete-list-".length);
-        store.markListForDeletion(idNamePair._id);
+        store.markListForDeletion(idNamePair._id); //is the parameter being passed good?
     }
 
     function toggleEdit() {
@@ -46,10 +44,6 @@ function ListCard(props) {
         setEditActive(newActive);
     }
 
-    // function toggleDelete() {
-    //     //delete list  
-    //     store.markListForDeletion(idNamePair._id); //show modal
-    // }
 
     function handleKeyPress(event) {
         if (event.code === "Enter") {

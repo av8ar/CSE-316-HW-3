@@ -58,7 +58,7 @@ export const useGlobalStore = () => {
                     newListCounter: store.newListCounter,
                     listNameActive: false,
                     listMarkedForDeletion: null
-                })
+                });
             }
             // CREATE A NEW LIST
             case GlobalStoreActionType.CREATE_NEW_LIST: {
@@ -68,7 +68,7 @@ export const useGlobalStore = () => {
                     newListCounter: store.newListCounter + 1,
                     listNameActive: false,
                     listMarkedForDeletion: null
-                })
+                });
             }
             // GET ALL THE LISTS SO WE CAN PRESENT THEM
             case GlobalStoreActionType.LOAD_ID_NAME_PAIRS: {
@@ -90,6 +90,18 @@ export const useGlobalStore = () => {
                     listMarkedForDeletion: payload
                 });
             }
+
+            //DELETE A LIST
+            case GlobalStoreActionType.DELETE_MARKED_LIST: {
+                return setStore({
+                    idNamePairs: payload,
+                    currentList: null,
+                    newListCounter: store.newListCounter,
+                    listNameActive: false,
+                    listMarkedForDeletion: null //store.listMarkedForDeletion
+                });
+            }
+
             // UPDATE A LIST
             case GlobalStoreActionType.SET_CURRENT_LIST: {
                 return setStore({
@@ -110,6 +122,17 @@ export const useGlobalStore = () => {
                     listMarkedForDeletion: null
                 });
             }
+            // // UPDATE A LIST
+            // case GlobalStoreActionType.UPDATE_CURRENT_LIST: {
+            //     return setStore({
+            //         idNamePairs: store.idNamePairs,
+            //         currentList: payload,
+            //         newListCounter: store.newListCounter,
+            //         listNameActive: true,
+            //         listMarkedForDeletion: null
+
+            //     });
+            // }
             default:
                 return store;
         }
@@ -182,12 +205,16 @@ export const useGlobalStore = () => {
             let response = await api.deletePlaylistById(id);
             if(response.data.success) {
                 store.loadIdNamePairs();
-                store.history.push("/");
+                const newIdNamePairs = store.idNamePairs.filter((idNamePair) => idNamePair !== id);
+                storeReducer({
+                    type: GlobalStoreActionType.DELETE_MARKED_LIST,
+                    payload: newIdNamePairs
+                });
             }
         }
         asyncRemoveCurrentList(id);
     }
-
+    //delete the list since the confirm button is pressed
     store.deleteMarkedList = function() {
         store.deleteList(store.listMarkedForDeletion);
         store.hideDeleteListModal();
@@ -249,6 +276,22 @@ export const useGlobalStore = () => {
     store.getPlaylistSize = function() {
         return store.currentList.songs.length;
     }
+
+    store.updatePlaylist = function() {
+
+    }
+
+    store.addSong = function() {
+        let list = store.currentList;
+        let song = {
+            title: "Untitled",
+            artist: "Unknown",
+            youtTubeId: "dQw4w9WgXcQ"
+        }
+        list.songs.push(song);
+
+    }
+
     store.undo = function () {
         tps.undoTransaction();
     }
