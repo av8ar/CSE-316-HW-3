@@ -1,4 +1,5 @@
 import EditToolbar from "./EditToolbar";
+import DeleteListModal from "./DeleteListModal";
 /*
     Our Application's Banner, note we are using function-style
     React. Our banner just has a left-aligned heading and a
@@ -7,11 +8,14 @@ import EditToolbar from "./EditToolbar";
     @author McKilla Gorilla
 */
 function Banner(props) {
-    return (        
-        <div id="playlister-banner">
-            Playlister
-            <EditToolbar />
-        </div>
+    return (
+        <div>    
+            <DeleteListModal />   
+            <div id="playlister-banner">
+                Playlister
+                <EditToolbar />
+            </div>
+        </div> 
     );
 }
 
