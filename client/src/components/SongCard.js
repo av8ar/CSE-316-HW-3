@@ -3,6 +3,8 @@ import { GlobalStoreContext } from '../store'
 
 function SongCard(props) {
     const { store } = useContext(GlobalStoreContext);
+    const [isDragging, setIsDragging] = useState(false);
+    const [draggedTo, setDraggedTo] = useState(false); 
 
     const { song, index } = props;
     let cardClass = "list-card unselected-list-card";
@@ -13,23 +15,27 @@ function SongCard(props) {
         store.showDeleteSongModal(index);
     }
 
-    const [draggedTo, setDraggedTo] = useState(0);
-
     function handleDragStart(event) {
-        event.dataTransfer.setData("item", event.target.id);
+        event.dataTransfer.setData("song", event.target.id);
+        setIsDragging(true);
+        setDraggedTo(true);
     }
 
     function handleDragOver(event) {
         event.preventDefault();
+        setIsDragging(isDragging);
+        setDraggedTo(true);
     }
 
     function handleDragEnter(event) {
         event.preventDefault();
+        setIsDragging(isDragging);
         setDraggedTo(true);
     }
 
     function handleDragLeave(event) {
         event.preventDefault();
+        setIsDragging(isDragging);
         setDraggedTo(false);
     }
 
@@ -38,12 +44,13 @@ function SongCard(props) {
         let target = event.target;
         let targetId = target.id;
         targetId = targetId.substring(target.id.indexOf("-") + 1);
-        let sourceId = event.dataTransfer.getData("item");
+        let sourceId = event.dataTransfer.getData("song");
         sourceId = sourceId.substring(sourceId.indexOf("-") + 1);
         setDraggedTo(false);
+        setIsDragging(false);
 
         // UPDATE THE LIST
-        store.addMoveItemTransaction(sourceId, targetId);
+        store.addMoveItemTransaction(parseInt(sourceId), parseInt(targetId));
     }
 
 

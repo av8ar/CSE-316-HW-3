@@ -3,6 +3,7 @@ import jsTPS from '../common/jsTPS'
 import api from '../api'
 import AddSong_Transaction from '../transactions/AddSongTransaction';
 import DeleteSong_Transaction from '../transactions/DeleteSongTransaction';
+import MoveSong_Transaction from '../components/MoveSongTransaction';
 export const GlobalStoreContext = createContext({});
 /*
     This is our global data store. Note that it uses the Flux design pattern,
@@ -350,6 +351,31 @@ export const useGlobalStore = () => {
         let artist = song.artist;
         let id = song.youTubeId;
         let transaction = new DeleteSong_Transaction(this, store.index, title, artist, id);
+        tps.addTransaction(transaction);
+    }
+
+    store.dragAndDropSong = (first,last) => {
+        let playlist = store.currentList;
+        if(first > last) {
+            let arr = playlist.songs[first];
+            for(let i = first; i > last; i--) {
+                playlist.songs[i] = playlist.songs[i - 1];
+            }
+            playlist.songs[last] = arr;
+        }
+        else if(first < last) {
+            let arr = playlist.songs[first];
+            for(let i = first; i < last; i++) {
+                playlist.songs[i] = playlist.songs[i+1];
+            }
+            playlist.songs[last] = arr;
+        }
+
+        store.updatePlaylist();
+    }
+
+    store.addMoveItemTransaction = function(start, end) {
+        let transaction = new MoveSong_Transaction(this, start, end);
         tps.addTransaction(transaction);
     }
 
