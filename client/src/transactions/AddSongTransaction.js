@@ -1,4 +1,5 @@
 import jsTPS_Transaction from "../common/jsTPS.js"
+
 /**
  * MoveSong_Transaction
  * 
@@ -7,16 +8,17 @@ import jsTPS_Transaction from "../common/jsTPS.js"
  * @author Victor Dai
  */
 export default class AddSong_Transaction extends jsTPS_Transaction {
-    constructor(initApp) {
+    constructor(store) {
         super();
-        this.app = initApp;
+        this.store = store;
     }
 
     doTransaction() {
-        this.app.addSong();
+        this.store.addSong();
     }
     
     undoTransaction() {
-        
+        this.store.currentList.songs.pop();
+        this.store.updatePlaylist();
     }
 }

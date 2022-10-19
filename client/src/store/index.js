@@ -1,6 +1,8 @@
 import { createContext, useState } from 'react'
 import jsTPS from '../common/jsTPS'
 import api from '../api'
+import AddSong_Transaction from '../transactions/AddSongTransaction';
+import DeleteSong_Transaction from '../transactions/DeleteSongTransaction';
 export const GlobalStoreContext = createContext({});
 /*
     This is our global data store. Note that it uses the Flux design pattern,
@@ -32,7 +34,8 @@ export const useGlobalStore = () => {
         currentList: null,
         newListCounter: 0,
         listNameActive: false,
-        listMarkedForDeletion: null
+        listMarkedForDeletion: null,
+        index: -1
     });
 
     // HERE'S THE DATA STORE'S REDUCER, IT MUST
@@ -47,7 +50,8 @@ export const useGlobalStore = () => {
                     currentList: payload.playlist,
                     newListCounter: store.newListCounter,
                     listNameActive: false,
-                    listMarkedForDeletion: null
+                    listMarkedForDeletion: null,
+                    index: -1
                 });
             }
             // STOP EDITING THE CURRENT LIST
@@ -57,7 +61,8 @@ export const useGlobalStore = () => {
                     currentList: null,
                     newListCounter: store.newListCounter,
                     listNameActive: false,
-                    listMarkedForDeletion: null
+                    listMarkedForDeletion: null,
+                    index: -1
                 });
             }
             // CREATE A NEW LIST
@@ -67,7 +72,8 @@ export const useGlobalStore = () => {
                     currentList: payload,
                     newListCounter: store.newListCounter + 1,
                     listNameActive: false,
-                    listMarkedForDeletion: null
+                    listMarkedForDeletion: null,
+                    index: -1
                 });
             }
             // GET ALL THE LISTS SO WE CAN PRESENT THEM
@@ -77,7 +83,8 @@ export const useGlobalStore = () => {
                     currentList: null,
                     newListCounter: store.newListCounter,
                     listNameActive: false,
-                    listMarkedForDeletion: null
+                    listMarkedForDeletion: null,
+                    index: -1
                 });
             }
             // PREPARE TO DELETE A LIST
@@ -87,7 +94,8 @@ export const useGlobalStore = () => {
                     currentList: null,
                     newListCounter: store.newListCounter,
                     listNameActive: false,
-                    listMarkedForDeletion: payload
+                    listMarkedForDeletion: payload,
+                    index: -1
                 });
             }
 
@@ -98,7 +106,8 @@ export const useGlobalStore = () => {
                     currentList: null,
                     newListCounter: store.newListCounter,
                     listNameActive: false,
-                    listMarkedForDeletion: null //store.listMarkedForDeletion
+                    listMarkedForDeletion: null,
+                    index: -1
                 });
             }
 
@@ -109,7 +118,8 @@ export const useGlobalStore = () => {
                     currentList: payload,
                     newListCounter: store.newListCounter,
                     listNameActive: false,
-                    listMarkedForDeletion: null
+                    listMarkedForDeletion: null,
+                    index: -1
                 });
             }
             // START EDITING A LIST NAME
@@ -119,9 +129,22 @@ export const useGlobalStore = () => {
                     currentList: payload,
                     newListCounter: store.newListCounter,
                     listNameActive: true,
-                    listMarkedForDeletion: null
+                    listMarkedForDeletion: null,
+                    index: -1
                 });
             }
+
+            // case GlobalStoreActionType.MARK_SONG_FOR_DELETION: {
+            //     return setStore({
+            //         idNamePairs: store.idNamePairs,
+            //         currentList: store.currentList,
+            //         newListCounter: store.newListCounter,
+            //         listNameActive: false,
+            //         listMarkedForDeletion: null,
+            //         index: payload
+            //     });
+            // }
+
             default:
                 return store;
         }
@@ -227,6 +250,17 @@ export const useGlobalStore = () => {
         modal.classList.remove("is-visible");
     }
 
+    store.showDeleteSongModal = function(index) {
+        store.index = index;
+        let modal = document.getElementById("delete-song-modal");
+        modal.classList.add("is-visible");
+    }
+
+    store.hideDeleteSongModal = function() {
+        let modal = document.getElementById("delete-song-modal");
+        modal.classList.remove("is-visible");
+    }
+
     // THIS FUNCTION LOADS ALL THE ID, NAME PAIRS SO WE CAN LIST ALL THE LISTS
     store.loadIdNamePairs = function () {
         async function asyncLoadIdNamePairs() {
@@ -288,7 +322,35 @@ export const useGlobalStore = () => {
         }
         list.songs.push(song);
         store.updatePlaylist();
-        
+    }
+
+    store.addAddSongTransaction = function() {
+        let transaction = new AddSong_Transaction(this);
+        tps.addTransaction(transaction);
+    }
+
+    // store.noteSongDelete = (index) => {
+    //     storeReducer({
+    //         type: GlobalStoreActionType.MARK_SONG_FOR_DELETION,
+    //         payload: index
+    //     });
+    // }
+
+    store.deleteSong = function(index) {
+        let list = store.currentList.songs;
+        list.splice(index, 1);
+        store.updatePlaylist();
+        store.hideDeleteSongModal();
+    }
+
+    store.addDeleteSongTransaction = function(index) {
+        console.log(index);
+        let song = store.currentList.songs[index];
+        let title = song.title;
+        let artist = song.artist;
+        let id = song.youTubeId;
+        let transaction = new DeleteSong_Transaction(this, store.index, title, artist, id);
+        tps.addTransaction(transaction);
     }
 
     store.undo = function () {

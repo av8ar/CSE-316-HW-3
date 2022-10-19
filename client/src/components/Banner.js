@@ -1,5 +1,6 @@
 import EditToolbar from "./EditToolbar";
 import DeleteListModal from "./DeleteListModal";
+import DeleteSongModal from "./DeleteSongModal";
 /*
     Our Application's Banner, note we are using function-style
     React. Our banner just has a left-aligned heading and a
@@ -10,7 +11,8 @@ import DeleteListModal from "./DeleteListModal";
 function Banner(props) {
     return (
         <div>    
-            <DeleteListModal />   
+            <DeleteListModal />
+            <DeleteSongModal />   
             <div id="playlister-banner">
                 Playlister
                 <EditToolbar />
